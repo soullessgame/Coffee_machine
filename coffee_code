@@ -1,0 +1,90 @@
+from Coffee_data import menu, resources
+
+
+# Functions created
+def format_resources(resources):
+    """Format account into printable format: water, milk and coffee"""
+    global new_line
+    water = resources["water"]
+    milk = resources["milk"]
+    coffee = resources["coffee"]
+    coins = resources["coins"]
+    return f"{water} ml water,{new_line}{milk} ml milk,{new_line}{coffee} grams coffee,{new_line}${coins:.2f} euro."
+
+
+def check_resources(input):
+    """Checks if there are enough resources"""
+    for item in input:
+        if input[item]>=resources[item]:
+            print(f'sorry, there is not enough {item}')
+            return False
+    return True
+
+    # for ingredient, amount in input.items():
+    #     resources[ingredient] -= amount
+    # for ingredient, amount in resources.items():
+    #     if amount < 0:
+    #         print(f'sorry, there is not enough {ingredient}')
+    #         return False
+    # for ingredient, amount in input.items():
+    #     resources[ingredient] += amount
+    # return True
+
+
+def process_coins():
+    print(f'please insert coins')
+    total = float(input(f'how many quarters ')) * 0.25
+    total += float(input(f'how many dimes ')) * 0.10
+    total += float(input(f'how many nickles ')) * 0.05
+    total += float(input(f'how many pennies ')) * 0.01
+    return total
+
+
+def coffee_machine():
+    global new_line
+    coffee_machine_on = True
+    while coffee_machine_on:
+        # TODO 1 ask user if they want an espresso, latte or cappucino
+        choice = str(input(f'What would you like? (espresso/latte/cappucino?\n')).lower()
+        if choice == "off":
+            coffee_machine_on = False
+        elif choice== "report":
+            print(format_resources(resources))
+        else:
+            coffee_milk_water_used = menu[choice]["ingredients"]
+            customer_costs = menu[choice]["cost"]
+            print(coffee_milk_water_used)
+
+            # TODO 2 print a report of how much water, milk coffee and money is in the machine
+            # print(format_resources(resources))
+
+            # TODO 3 Check if there are sufficient resources for a coffee
+            if check_resources(coffee_milk_water_used) == False:
+                print('try another drink')
+            else:
+                print(check_resources(coffee_milk_water_used))
+
+                # TODO 4 process coins and check transaction: does user have enough coins?
+                coins_inserted = process_coins()
+
+                if coins_inserted < customer_costs:
+                    print('to little money, try adding more money')
+                else:
+                    change = coins_inserted - customer_costs
+                    print(f'total change: ${change:.2f}')
+
+                    # todo 6 make coffee
+                    if check_resources(coffee_milk_water_used) == True:
+                        print(f'Report before purchasing {choice}:{new_line}{format_resources(resources)}')
+                        for ingredient, amount in coffee_milk_water_used.items():
+                            resources[ingredient] -= amount
+                        resources["coins"] += customer_costs
+                        print(f'Report after purchasing {choice}:{new_line}{format_resources(resources)}')
+
+                        print(f'here is your {choice}, enjoy!')
+
+    print(f'machine turned off')
+
+
+new_line = '\n'
+coffee_machine()
